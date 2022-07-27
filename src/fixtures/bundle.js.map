@@ -1,0 +1,1 @@
+{"version":3,"file":"bundle.js","sources":["../src/app.js"],"sourcesContent":["function foo() {\n  throw new Error(\"hi\");\n}\n\nfunction bar() {\n  /*@__NOINLINE__*/\n  foo();\n}\n\n/*@__NOINLINE__*/\nbar();\n"],"names":["foo","Error","bar"],"mappings":"AAAA,SAASA,IACP,MAAM,IAAIC,MAAM,KAClB,CAEA,SAASC,IAEPF,GACF,CAGAE"}
