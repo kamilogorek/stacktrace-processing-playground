@@ -1,6 +1,6 @@
 use sourcemap::{SourceMap, SourceView};
 use std::{collections::HashMap, fs::read_to_string, ops::Deref};
-use symbolic::iddqd::{ScopeLookupResult, SmCache, SmCacheWriter, SourceContext, SourcePosition};
+use symbolic::iddqd::{ScopeLookupResult, SmCache, SmCacheWriter, SourcePosition};
 
 use crate::types::Frame;
 
@@ -8,6 +8,7 @@ pub struct Processor<'a> {
     pub sources: HashMap<String, SourceView<'a>>,
     pub sourcemaps: HashMap<String, SourceMap>,
     pub links: HashMap<String, String>,
+    pub previous_frame_name: Option<String>,
 }
 
 impl<'a> Processor<'a> {
@@ -16,6 +17,7 @@ impl<'a> Processor<'a> {
             sources: HashMap::new(),
             sourcemaps: HashMap::new(),
             links: HashMap::new(),
+            previous_frame_name: None,
         }
     }
 
@@ -48,15 +50,29 @@ impl<'a> Processor<'a> {
         let sp = SourcePosition::new(frame.lineno - 1, frame.colno - 1);
         let token = cache.lookup(sp).unwrap();
 
+        // This is only for heuristic testing purposes, could be somehow integrated into iddqd
+        let sourcemap = SourceMap::from_slice(sourcemap_content.as_bytes()).unwrap();
+        let fallback_token = sourcemap
+            .lookup_token(frame.lineno - 1, frame.colno - 1)
+            .unwrap();
+        let fallback_token_name = fallback_token.get_name().map(|s| s.to_string());
+
         // This is the place where we actually modify the frame
         frame.lineno = token.line() + 1;
         frame.colno = 0; // todo!(); — columns not supported in iddqd currently
         frame.function = (match token.scope() {
             ScopeLookupResult::NamedScope(name) => name,
-            ScopeLookupResult::AnonymousScope => "<anonymous>",
-            ScopeLookupResult::Unknown => "<unknown>",
+            _ => {
+                if let Some(prev_frame_name) = self.previous_frame_name.as_ref() {
+                    prev_frame_name
+                } else {
+                    "<unknown>"
+                }
+            }
         })
         .to_string();
+
+        self.previous_frame_name = fallback_token_name;
 
         let abs_path = token.file_name().unwrap();
         frame.abs_path = abs_path.to_string();
