@@ -42,6 +42,17 @@ impl<'a> Processor<'a> {
         let sourcemap_content =
             read_to_string(format!("src/fixtures/{sourcemap_ref_url}")).unwrap();
 
+        // SmCacheWriter::new - accepts (minified_source, sourcemap)
+        // SmCache::parse - accepts (buffer)
+        // SourcePosition::new - accepts (lineno, colno)
+        // SmCache.lookup
+        // token.lineno getter
+        // token.colno getter - decide whether we should actually support column number
+        // token.get_function_name - or similar helper to get stringified function name, independent of scope type
+        // token.file_name getter
+        // unminified source getter (for reading context lines through expand_frame function)
+        //   - or get context lines directly
+
         let writer = SmCacheWriter::new(source_view.source(), &sourcemap_content).unwrap();
         let mut buffer = Vec::new();
         writer.serialize(&mut buffer).unwrap();
