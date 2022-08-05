@@ -1,6 +1,6 @@
 use sourcemap::{SourceMap, SourceView};
 use std::{collections::HashMap, fs::read_to_string, ops::Deref};
-use symbolic::iddqd::{ScopeLookupResult, SmCache, SmCacheWriter, SourcePosition};
+use symbolic::smcache::{ScopeLookupResult, SmCache, SmCacheWriter, SourcePosition};
 
 use crate::types::Frame;
 
@@ -21,9 +21,6 @@ impl<'a> Processor<'a> {
         }
     }
 
-    pub fn preprocess_step(&mut self, frames: &[Frame]) {
-        self.populate_source_cache(frames);
-    }
     pub fn process_frame(&mut self, frame: &mut Frame) {
         // This is equivalent of `fetch_release_file` function
         let source_content = read_to_string(format!("src/fixtures/{}", &frame.abs_path)).unwrap();
@@ -91,14 +88,6 @@ impl<'a> Processor<'a> {
         let unminified_source = token.file().unwrap().source().unwrap();
         self.expand_frame(frame, unminified_source);
     }
-
-    fn populate_source_cache(&mut self, frames: &[Frame]) {
-        for frame in frames {
-            self.cache_source(frame.abs_path.to_string());
-        }
-    }
-
-    fn cache_source(&mut self, abs_path: String) {}
 
     fn expand_frame(&self, frame: &mut Frame, source: &str) {
         let (pre, line, post) = get_source_context(source, frame.lineno as usize);

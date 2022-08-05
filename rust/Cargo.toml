@@ -5,4 +5,4 @@ edition = "2021"
 
 [dependencies]
 sourcemap = "6.0.2"
-symbolic = { path = "../../../repositories/symbolic/symbolic", features = ["iddqd"] }
+symbolic = { path = "../../../../repositories/symbolic/symbolic", features = ["smcache"] }

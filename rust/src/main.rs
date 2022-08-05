@@ -7,6 +7,7 @@ use crate::modern::Processor as ModernProcessor;
 use crate::types::Frame;
 use crate::types::Stacktrace;
 
+#[allow(dead_code)]
 fn frames_bundle() -> Vec<Frame> {
     vec![
         Frame {
@@ -33,6 +34,7 @@ fn frames_bundle() -> Vec<Frame> {
     ]
 }
 
+#[allow(dead_code)]
 fn frames_apply() -> Vec<Frame> {
     vec![
         Frame {
@@ -57,6 +59,7 @@ fn frames_apply() -> Vec<Frame> {
     ]
 }
 
+#[allow(dead_code)]
 fn frames_module() -> Vec<Frame> {
     vec![
         Frame {
@@ -82,6 +85,7 @@ fn frames_module() -> Vec<Frame> {
     ]
 }
 
+#[allow(dead_code)]
 fn frames_sentry() -> Vec<Frame> {
     vec![
         Frame {
@@ -125,10 +129,8 @@ fn run_legacy() {
         processor.process_frame(frame);
     }
 
-    // dbg!(&stacktrace);
-
     for frame in &mut stacktrace.frames {
-        dbg!(&frame.function);
+        dbg!(&frame);
     }
 }
 
@@ -137,16 +139,12 @@ fn run_modern() {
     let frames = frames_sentry();
     let mut stacktrace = Stacktrace { frames };
 
-    // processor.preprocess_step(&stacktrace.frames);
-
     for frame in &mut stacktrace.frames {
         processor.process_frame(frame);
     }
 
-    // dbg!(&stacktrace);
-
     for frame in &mut stacktrace.frames {
-        dbg!(&frame.function);
+        dbg!(&frame);
     }
 }
 
