@@ -93,12 +93,16 @@ def process_frame(frame):
     sourcemap_file.close()
 
     cache = SmCache.from_bytes(source_content, sourcemap_content)
-    token = cache.lookup(frame['lineno'], frame['colno'])
+    token = cache.lookup(frame['lineno'], frame['colno'], LINES_OF_CONTEXT)
 
     frame['lineno'] = token.line
     frame['colno'] = token.col
     frame['abs_path'] = token.src
     frame['function'] = token.function_name
+
+    frame['pre_context'] = token.pre_context
+    frame['context_line'] = token.context_line
+    frame['post_context'] = token.post_context
 
 
 frames = [
